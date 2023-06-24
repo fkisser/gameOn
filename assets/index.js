@@ -9,11 +9,13 @@ const overlay = d.querySelector(".overlay");
 
 const switchCart = () => {
   if (cartMenu.classList.contains("--slide-in")) {
-    cartMenu.classList.remove("--slide-in");
+    overlay.classList.add("--d-none");
     overlay.classList.remove("--slide-in");
+    cartMenu.classList.remove("--slide-in");
   } else {
-    cartMenu.classList.add("--slide-in");
     overlay.classList.add("--slide-in");
+    overlay.classList.remove("--d-none");
+    cartMenu.classList.add("--slide-in");
     navbar.classList.remove("--slide-in");
   }
 }
@@ -22,9 +24,11 @@ const switchMenu = () => {
   if (navbar.classList.contains("--slide-in")) {
     navbar.classList.remove("--slide-in");
     overlay.classList.remove("--slide-in");
+    overlay.classList.add("--d-none");
   } else {
     navbar.classList.add("--slide-in");
     overlay.classList.add("--slide-in");
+    overlay.classList.remove("--d-none");
     cartMenu.classList.remove("--slide-in");
   }
 }
