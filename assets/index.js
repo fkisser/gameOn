@@ -6,6 +6,8 @@ const d = document,
 const cartMenu = d.querySelector(".cart");
 const navbar = d.querySelector(".navbar");
 const overlay = d.querySelector(".overlay");
+const cartContainer = d.querySelector(".cart-container");
+const addToCartBtn = d.querySelector(".add-btn");
 
 const switchCart = () => {
   if (cartMenu.classList.contains("--slide-in")) {
@@ -87,8 +89,12 @@ const updateProducts = () => {
   const category = d.querySelector("#categories").value;
   const filtered = filterProducts(category);
   renderProducts(filtered);
+  saveProducts();
 }
 
+const saveProducts = () => {
+  localStorage.setItem("products", JSON.stringify(products));
+};
 
 /*LÓGICA DEL CARRITO*/
 let cart = JSON.parse(localStorage.getItem("cart")) || [];
@@ -97,8 +103,76 @@ const saveCart = () => {
   localStorage.setItem("cart", JSON.stringify(cart));
 };
 
+const cartQuantityPlus = (id) => {
+  cart = cart.map((cartProduct) => {
+    return cartProduct.id === id
+      ? { ...cartProduct, quantity: cartProduct.quantity + 1 }
+      : cartProduct;
+  });
+}
+const cartQuantityMinus = (id) => {
+  cart = cart.map((cartProduct) => {
+    return cartProduct.id === id
+      ? { ...cartProduct, quantity: cartProduct.quantity - 1 }
+      : cartProduct;
+  });
+}
 
+const createCartProduct = (product) => {
+  cart = [
+    ...cart,
+    {
+      ...product,
+      quantity: 1
+    }
+  ]
+}
 
+const createCartProductTemplate = (cartProduct) => {
+  const { id, title, price, quantity, url } = cartProduct;
+  return `
+    <div class="cart-item">
+      <div class="item-data">
+        <div class="item-img">
+          <img src="${url}" alt="producto del carrito" />
+        </div>
+        <div class="item-text">
+          <h3 class="item-title">${title}</h3>
+          <span class="item-price">$${(price * quantity).toFixed(2)}</span>
+        </div>
+      </div>
+      <div class="item-handler">
+        <span class="product-quantity-btn" data-id="${id}">-</span>
+        <span class="item-product-quantity">${quantity}</span>
+        <span class="product-quantity-btn" data-id="${id}">+</span>
+      </div>
+    </div>
+  `
+}
+
+const renderCart = () => {
+  if (!cart.length) {
+    cartContainer.innerHTML = `<p class="empty-msg">No hay productos en el carrito.</p>`;
+    return;
+  }
+  cartContainer.innerHTML = cart.map(createCartProductTemplate).join("");
+  saveCart();
+};
+
+const productStockPlus = (id) => {
+  products = products.map((product) => {
+    return product.id === id
+      ? { ...product, quantity: product.quantity + 1 }
+      : product;
+  });
+}
+const productStockMinus = (id) => {
+  products = products.map((product) => {
+    return product.id === id
+      ? { ...product, quantity: product.quantity - 1 }
+      : product;
+  });
+}
 
 const addToCart = (e) => {
   if (!e.target.classList.contains("add-btn") && !e.target.classList.contains("fa-cart-shopping")) return;
@@ -108,29 +182,30 @@ const addToCart = (e) => {
   } else {
     product = products.find((product) => product.id === Number(e.target.dataset.id));
   }
-
   let cartProduct = cart.find((elem) => elem.id === product.id);
   if (!cartProduct) {
-    createCartProduct(product); //CREAR LA FUNCION
-    showModal("El producto se ha añadido al carrito"); //CREAR LA FUNCION
+    createCartProduct(product);
+    // showModal("El producto se ha añadido al carrito"); //CREAR LA FUNCION
   } else {
-    cartQuantityPlus(product.id); //CREAR LA FUNCIÓN
-    showModal("Se ha añadido una unidad al producto");
+    cartQuantityPlus(product.id);
+    // showModal("Se ha añadido una unidad al producto");
   }
-
   //Actualizamos vista del carrito
-  renderCart(); //CREAR LA FUNCION
+  renderCart();
   //restamos una unidad al stock en el arreglo de productos
-  updateStock(product.id); //CREAR LA FUNCIÓN
+  productStockMinus(product.id);
   //actualizamos vista
   updateProducts();
+
 }
 
 const init = () => {
   d.addEventListener('DOMContentLoaded', updateProducts);
+  d.addEventListener('DOMContentLoaded', renderCart);
   category.addEventListener("change", updateProducts);
   productsContainer.addEventListener("click", addToCart);
   cartBtn.addEventListener("click", switchCart);
   menuBtn.addEventListener("click", switchMenu);
+  addToCartBtn.addEventListener("click", addToCart);
 }
 init();

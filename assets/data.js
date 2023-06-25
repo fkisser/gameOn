@@ -1,4 +1,4 @@
-const products = [
+let products = JSON.parse(localStorage.getItem("products")) || [
   {
     "id": 1,
     "title": "Portátil HP Pavilion",
