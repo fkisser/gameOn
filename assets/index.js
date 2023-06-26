@@ -8,6 +8,9 @@ const navbar = d.querySelector(".navbar");
 const overlay = d.querySelector(".overlay");
 const cartContainer = d.querySelector(".cart-container");
 const addToCartBtn = d.querySelector(".add-btn");
+const totalContainer = d.querySelector(".cart-total");
+const buyBtn = d.querySelector(".buy-btn");
+const clearBtn = d.querySelector(".clear-btn");
 
 const switchCart = () => {
   if (cartMenu.classList.contains("--slide-in")) {
@@ -150,12 +153,31 @@ const createCartProductTemplate = (cartProduct) => {
   `
 }
 
+const disableElements = () => {
+  cartContainer.innerHTML = `<p class="empty-msg">No hay productos en el carrito.</p>`;
+  buyBtn.attributes.disabled = true;
+  buyBtn.classList.add("--disabled");
+  clearBtn.attributes.disabled = true;
+  clearBtn.classList.add("--disabled");
+  totalContainer.classList.add("--d-none");
+}
+
+const enableElements = () => {
+  buyBtn.attributes.disabled = false;
+  buyBtn.classList.remove("--disabled");
+  clearBtn.attributes.disabled = false;
+  clearBtn.classList.remove("--disabled");
+  totalContainer.classList.remove("--d-none");
+}
+
 const renderCart = () => {
   if (!cart.length) {
-    cartContainer.innerHTML = `<p class="empty-msg">No hay productos en el carrito.</p>`;
+    disableElements();
     return;
   }
   cartContainer.innerHTML = cart.map(createCartProductTemplate).join("");
+  enableElements();
+  total();
   saveCart();
 };
 
@@ -198,6 +220,24 @@ const addToCart = (e) => {
   updateProducts();
 
 }
+
+//funcion total
+const total = () => {
+  totalContainer.innerHTML = `
+    <p>Total:</p> <span class="total">u$d ${cart.reduce((acc, elem) => acc + (elem.price * elem.quantity), 0).toFixed(2)}</span>
+  `;
+}
+//funcion habilitar/deshabilitar botones
+
+//funcion quantity handler
+//segun el target del evento
+//si no es del quantity handler, retorno
+//si es del boton + => funcion de incrementar
+//si es del boton - => funcion de decrementar y chequear para eliminar el producto del carrito
+
+//funcion vaciar carrito => modal de confirmación, clear del array y render
+
+//funcion comprar => renderizar el modal de compra
 
 const init = () => {
   d.addEventListener('DOMContentLoaded', updateProducts);

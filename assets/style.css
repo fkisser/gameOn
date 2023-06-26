@@ -524,9 +524,9 @@ form .categories .selected {
   flex-direction: column;
   justify-content: space-between;
   align-items: center;
-  gap: 1rem;
+  gap: 1.5rem;
   background-color: var(--dark-blue);
-  padding: 1rem;
+  padding: 1.5rem;
 }
 
 .cart-container {
@@ -603,8 +603,6 @@ form .categories .selected {
   gap: .5rem;
 }
 
-.cart-item .item-product-quantity {}
-
 .cart-item .product-quantity-btn {
   display: flex;
   align-items: center;
@@ -626,22 +624,54 @@ form .categories .selected {
   background-color: var(--light-blue);
 }
 
-.cart-item .cart-total {
+.cart-total {
   display: flex;
+  justify-content: space-between;
+  font-size: x-large;
+  font-weight: 600;
   width: 100%;
+  border-top: .2rem solid var(--light-blue);
+  padding-top: .5rem;
 }
 
-.cart-item .total {}
-
-.cart-item .cart-btns {
-  display: flex;
-  width: 100%;
-  padding: 1rem;
+.total {
+  color: var(--selective-yellow);
 }
 
-.cart-item .buy-btn {}
+.cart-btns {
+  display: flex;
+  flex-direction: row-reverse;
+  width: 100%;
+  justify-content: space-between;
+}
 
-.cart-item .clear-btn {}
+.buy-btn,
+.clear-btn {
+  padding: .8rem 0;
+  width: 40%;
+  border-radius: .5rem;
+  font-family: var(--title-font);
+  font-size: large;
+  cursor: pointer;
+}
+
+.buy-btn {
+  border-width: 0rem;
+  background-color: var(--light-blue);
+  color: var(--dark-blue);
+}
+
+.clear-btn {
+  border: .3rem solid var(--light-blue);
+  background-color: transparent;
+  color: var(--light-blue);
+}
+
+.empty-msg {
+  font-size: large;
+  text-align: center;
+  font-weight: 500;
+}
 
 
 /*********************Utilities*************************/
@@ -671,4 +701,11 @@ form .categories .selected {
   transform: translate(0%, 0%);
   opacity: 1;
   transition: all .5s ease;
+}
+
+.--disabled {
+  cursor: not-allowed;
+  border: 0;
+  background-color: var(--mid-blue);
+  color: var(--dark-blue);
 }
