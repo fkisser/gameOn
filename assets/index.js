@@ -11,6 +11,8 @@ const addToCartBtn = d.querySelector(".add-btn");
 const totalContainer = d.querySelector(".cart-total");
 const buyBtn = d.querySelector(".buy-btn");
 const clearBtn = d.querySelector(".clear-btn");
+const cartBubble = d.querySelector(".cart-bubble");
+const cartBackBtn = d.querySelector(".cart-back-btn");
 
 const switchCart = () => {
   if (cartMenu.classList.contains("--slide-in")) {
@@ -30,11 +32,13 @@ const switchMenu = () => {
     navbar.classList.remove("--slide-in");
     overlay.classList.remove("--slide-in");
     overlay.classList.add("--d-none");
+    menuBtn.innerHTML = `<i class="fa-solid fa-bars"></i>`;
   } else {
     navbar.classList.add("--slide-in");
     overlay.classList.add("--slide-in");
     overlay.classList.remove("--d-none");
     cartMenu.classList.remove("--slide-in");
+    menuBtn.innerHTML = `<i class="fa-solid fa-xmark"></i>`;
   }
 }
 
@@ -88,9 +92,19 @@ const filterProducts = (category) => {
   else return products.filter((product) => product.category === category)
 }
 
+const selectCategory = (value) => {
+  const categories = [...category.children];
+  categories.forEach((option) => {
+    if (option.value === value)
+      option.classList.add("selected");
+    else
+      option.classList.remove("selected");
+  });
+}
+
 const updateProducts = () => {
-  const category = d.querySelector("#categories").value;
-  const filtered = filterProducts(category);
+  const filtered = filterProducts(category.value);
+  selectCategory(category.value);
   renderProducts(filtered);
   saveProducts();
 }
@@ -145,9 +159,9 @@ const createCartProductTemplate = (cartProduct) => {
         </div>
       </div>
       <div class="item-handler">
-        <span class="product-quantity-btn" data-id="${id}">-</span>
+        <span class="product-quantity-btn minus" data-id="${id}">-</span>
         <span class="item-product-quantity">${quantity}</span>
-        <span class="product-quantity-btn" data-id="${id}">+</span>
+        <span class="product-quantity-btn plus" data-id="${id}">+</span>
       </div>
     </div>
   `
@@ -171,8 +185,10 @@ const enableElements = () => {
 }
 
 const renderCart = () => {
+  cartQuantityRender();
   if (!cart.length) {
     disableElements();
+    saveCart();
     return;
   }
   cartContainer.innerHTML = cart.map(createCartProductTemplate).join("");
@@ -210,7 +226,7 @@ const addToCart = (e) => {
     // showModal("El producto se ha añadido al carrito"); //CREAR LA FUNCION
   } else {
     cartQuantityPlus(product.id);
-    // showModal("Se ha añadido una unidad al producto");
+    // showModal("Se ha añadido otra unidad al producto");
   }
   //Actualizamos vista del carrito
   renderCart();
@@ -227,17 +243,54 @@ const total = () => {
     <p>Total:</p> <span class="total">u$d ${cart.reduce((acc, elem) => acc + (elem.price * elem.quantity), 0).toFixed(2)}</span>
   `;
 }
-//funcion habilitar/deshabilitar botones
 
 //funcion quantity handler
-//segun el target del evento
-//si no es del quantity handler, retorno
-//si es del boton + => funcion de incrementar
-//si es del boton - => funcion de decrementar y chequear para eliminar el producto del carrito
+const quantityHandler = (e) => {
+  //segun el target del evento
+  if (e.target.classList.contains("plus")) {
+    cartQuantityPlus(Number(e.target.dataset.id));
+    productStockMinus(Number(e.target.dataset.id));
+  }
+  if (e.target.classList.contains("minus")) {
+    if (cart.find((elem) => elem.id === Number(e.target.dataset.id) && elem.quantity === 1)) {
+      if (!confirm("Desea eliminar el elemento del carrito?")) return;
+    }
+    cartQuantityMinus(Number(e.target.dataset.id));
+    productStockPlus(Number(e.target.dataset.id));
+    cart = cart.filter((elem) => elem.quantity > 0);
+  }
+  renderCart();
+  updateProducts();
+}
 
-//funcion vaciar carrito => modal de confirmación, clear del array y render
+const restoreStock = () => {
+  cart.forEach(cartProduct => {
+    for (let i = 0; i < cartProduct.quantity; i++) {
+      productStockPlus(cartProduct.id);
+    }
+  });
+}
+
+const emptyCart = () => {
+  if (confirm("¿Está seguro que desea vaciar el carrito?")) {
+    restoreStock();
+    cart = [];
+    localStorage.removeItem("cart");
+    renderCart();
+    localStorage.removeItem("products");
+    updateProducts();
+  }
+}
 
 //funcion comprar => renderizar el modal de compra
+
+
+//funcion burbuja
+const cartQuantityRender = () => {
+  cartBubble.innerHTML = `
+    ${cart.reduce((acc, elem) => acc + (elem.quantity), 0)}
+  `;
+}
 
 const init = () => {
   d.addEventListener('DOMContentLoaded', updateProducts);
@@ -246,6 +299,9 @@ const init = () => {
   productsContainer.addEventListener("click", addToCart);
   cartBtn.addEventListener("click", switchCart);
   menuBtn.addEventListener("click", switchMenu);
-  addToCartBtn.addEventListener("click", addToCart);
+  navbar.addEventListener("click", switchMenu);
+  clearBtn.addEventListener("click", emptyCart);
+  cartContainer.addEventListener("click", quantityHandler);
+  cartBackBtn.addEventListener("click", switchCart);
 }
 init();

@@ -25,7 +25,6 @@
     <nav>
       <div class="menu-btn">
         <i class="fa-solid fa-bars"></i>
-        <i class="fa-solid fa-xmark --d-none"></i>
       </div>
 
       <div class="overlay --d-none"></div>
@@ -45,7 +44,10 @@
       </div>
 
       <div class="cart">
-        <h2>Tu compra</h2>
+        <div class="cart-header">
+          <button class="cart-back-btn"><i class="fa-solid fa-arrow-left"></i></button>
+          <h2>Tu compra</h2>
+        </div>
         <div class="cart-container"></div>
 
         <div class="cart-total">
@@ -99,16 +101,16 @@
       <form>
         <label for="categories">Categoría</label>
         <select class="categories" name="categories" id="categories">
-          <option value="all" class="fa category selected" autofocus>Todas</option>
-          <option value="Audio" class="fa category"><i class="fa-solid fa-headphones"></i>Audio</option>
-          <option value="Almacenamiento" class="fa category"><i class="fa-solid fa-database"></i>Almacenamiento</option>
-          <option value="Impresoras" class="fa category"><i class="fa-solid fa-print"></i>Impresoras</option>
-          <option value="Monitores" class="fa category"><i class="fa-solid fa-desktop"></i>Monitores</option>
-          <option value="Mouse" class="fa category"><i class="fa-solid fa-computer-mouse"></i>Mouse</option>
-          <option value="Notebooks" class="fa category"><i class="fa-solid fa-laptop"></i>Notebooks</option>
-          <option value="Redes" class="fa category"><i class="fa-solid fa-wifi"></i>Redes</option>
-          <option value="Teclados" class="fa category"><i class="fa-solid fa-keyboard"></i>Teclados</option>
-          <option value="Webcams" class="fa category"><i class="fa-solid fa-camera"></i>Webcams</option>
+          <option value="all" class="category selected" autofocus>Todas</option>
+          <option value="Audio" class="category">Audio</option>
+          <option value="Almacenamiento" class="category">Almacenamiento</option>
+          <option value="Impresoras" class="category">Impresoras</option>
+          <option value="Monitores" class="category">Monitores</option>
+          <option value="Mouse" class="category">Mouse</option>
+          <option value="Notebooks" class="category">Notebooks</option>
+          <option value="Redes" class="category">Redes</option>
+          <option value="Teclados" class="category">Teclados</option>
+          <option value="Webcams" class="category">Webcams</option>
         </select>
       </form>
   </section>
@@ -149,7 +151,8 @@
           <input type="text" name="name" id="name" placeholder="Tu nombre...">
           <input type="text" name="lname" id="lname" placeholder="Tu apellido...">
           <input type="email" name="email" id="email" placeholder="Tu mail...">
-          <textarea name="message" id="message" cols="30" rows="10" placeholder="Tu mensaje..."></textarea>
+          <textarea name="message" id="message" cols="30" rows="7" placeholder="Tu mensaje..."></textarea>
+          <button class="form-btn" type="submit">Enviar</button>
         </form>
       </div>
     </div>
