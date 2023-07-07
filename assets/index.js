@@ -44,36 +44,40 @@ const switchMenu = () => {
 
 const createProductTemplate = (product) => {
   const { id, title, description, price, quantity, url } = product;
-  if (Number(quantity)) {
+  if (!quantity) {
     return `
             <div class="product">
               <div class="product-text">
                 <h4 class="product-title">${title}</h4>
                 <p class="product-desc">${description}</p>
-                <div class="product-nums">
-                  <p class="product-price">u$d ${price}</p>
-                  <p class="product-quantity">Stock: ${quantity}</p>
-                </div>
+                <p class="product-price">u$d ${price}</p>
               </div>
-              <div class="product-img">
-                <img src=${url} alt="${title}">
+              <div class= "product-group">
+                <div class="product-img">
+                  <img src=${url} alt="${title}">
+                </div>
               </div>
               <div class="add-btn" data-id="${id}">+<i class="fa-solid fa-cart-shopping"></i></div>
             </div>
       `;
-  } else {
+  }
+  else {
     return `
             <div class="product">
               <div class="product-text">
                 <h4 class="product-title">${title}</h4>
                 <p class="product-desc">${description}</p>
-                <div class="product-nums">
-                  <p class="product-price">u$d ${price}</p>
-                  <p class="product-quantity color-red bold">Sin stock</p>
-                </div>
+                <p class="product-price">u$d ${price}</p>
               </div>
-              <div class="product-img">
-                <img src=${url} alt="${title}">
+              <div class= "product-group">
+                <div class="product-img">
+                  <img src=${url} alt="${title}">
+                </div>
+                <div class="item-handler">
+                  <span class="product-quantity-btn minus" data-id="${id}">-</span>
+                  <span class="item-product-quantity">${quantity}</span>
+                  <span class="product-quantity-btn plus" data-id="${id}">+</span>
+                </div>
               </div>
             </div>
       `;
@@ -107,40 +111,87 @@ const updateProducts = () => {
   selectCategory(category.value);
   renderProducts(filtered);
   saveProducts();
-}
+};
 
 const saveProducts = () => {
   localStorage.setItem("products", JSON.stringify(products));
 };
 
-/*LÓGICA DEL CARRITO*/
-let cart = JSON.parse(localStorage.getItem("cart")) || [];
-
-const saveCart = () => {
-  localStorage.setItem("cart", JSON.stringify(cart));
-};
-
-const cartQuantityPlus = (id) => {
-  cart = cart.map((cartProduct) => {
-    return cartProduct.id === id
-      ? { ...cartProduct, quantity: cartProduct.quantity + 1 }
-      : cartProduct;
+const quantityPlus = (id) => {
+  products = products.map((product) => {
+    return product.id === id
+      ? {
+        ...product,
+        quantity: product.quantity + 1
+      }
+      : product;
   });
 }
-const cartQuantityMinus = (id) => {
-  cart = cart.map((cartProduct) => {
-    return cartProduct.id === id
-      ? { ...cartProduct, quantity: cartProduct.quantity - 1 }
-      : cartProduct;
+const quantityMinus = (id) => {
+  products = products.map((product) => {
+    return product.id === id
+      ? { ...product, quantity: product.quantity - 1 }
+      : product;
   });
 }
+
+
+const addToCart = (e) => {
+  if (!e.target.classList.contains("add-btn") && !e.target.classList.contains("fa-cart-shopping")) return;
+  let product;
+  if (e.target.classList.contains("fa-cart-shopping")) {
+    product = products.find((product) => Number(product.id) === Number(e.target.parentElement.dataset.id));
+  } else {
+    product = products.find((product) => Number(product.id) === Number(e.target.dataset.id));
+  }
+  try {
+    quantityPlus(product.id);
+    // showModal("El producto se ha añadido al carrito"); //CREAR LA FUNCION
+  } catch (error) {
+    // showError(error); //CREAR LA FUNCION
+  }
+
+}
+
+const productClick = (e) => {
+  addToCart(e);
+  quantityHandler(e);
+
+  //Actualizamos vista del carrito
+  renderCart();
+
+  //actualizamos vista de productos
+  updateProducts();
+
+}
+
+//funcion quantity handler
+const quantityHandler = (e) => {
+  //segun el target del evento
+  if (!e.target.classList.contains("plus") && !e.target.classList.contains("minus")) return;
+  if (e.target.classList.contains("plus")) {
+    quantityPlus(Number(e.target.dataset.id));
+  }
+  if (e.target.classList.contains("minus")) {
+    if (cart.find((elem) => elem.id === Number(e.target.dataset.id) && elem.quantity === 1)) {
+      if (!confirm("Desea eliminar el elemento del carrito?")) return;
+    }
+    quantityMinus(Number(e.target.dataset.id));
+  }
+}
+
+//               //
+// CARRITO         ////////
+//                  //////
+//                   O  O
+
+let cart = products.filter((product) => product.quantity) || [];
 
 const createCartProduct = (product) => {
   cart = [
     ...cart,
     {
-      ...product,
-      quantity: 1
+      ...product
     }
   ]
 }
@@ -185,100 +236,29 @@ const enableElements = () => {
 }
 
 const renderCart = () => {
+  cart = products.filter((product) => product.quantity) || [];
   cartQuantityRender();
   if (!cart.length) {
     disableElements();
-    saveCart();
     return;
   }
   cartContainer.innerHTML = cart.map(createCartProductTemplate).join("");
   enableElements();
   total();
-  saveCart();
 };
 
-const productStockPlus = (id) => {
-  products = products.map((product) => {
-    return product.id === id
-      ? { ...product, quantity: product.quantity + 1 }
-      : product;
-  });
-}
-const productStockMinus = (id) => {
-  products = products.map((product) => {
-    return product.id === id
-      ? { ...product, quantity: product.quantity - 1 }
-      : product;
-  });
-}
-
-const addToCart = (e) => {
-  if (!e.target.classList.contains("add-btn") && !e.target.classList.contains("fa-cart-shopping")) return;
-  let product;
-  if (e.target.classList.contains("fa-cart-shopping")) {
-    product = products.find((product) => product.id === Number(e.target.parentElement.dataset.id));
-  } else {
-    product = products.find((product) => product.id === Number(e.target.dataset.id));
-  }
-  let cartProduct = cart.find((elem) => elem.id === product.id);
-  if (!cartProduct) {
-    createCartProduct(product);
-    // showModal("El producto se ha añadido al carrito"); //CREAR LA FUNCION
-  } else {
-    cartQuantityPlus(product.id);
-    // showModal("Se ha añadido otra unidad al producto");
-  }
-  //Actualizamos vista del carrito
-  renderCart();
-  //restamos una unidad al stock en el arreglo de productos
-  productStockMinus(product.id);
-  //actualizamos vista
-  updateProducts();
-
-}
-
-//funcion total
-const total = () => {
-  totalContainer.innerHTML = `
-    <p>Total:</p> <span class="total">u$d ${cart.reduce((acc, elem) => acc + (elem.price * elem.quantity), 0).toFixed(2)}</span>
-  `;
-}
-
-//funcion quantity handler
-const quantityHandler = (e) => {
-  //segun el target del evento
-  if (e.target.classList.contains("plus")) {
-    cartQuantityPlus(Number(e.target.dataset.id));
-    productStockMinus(Number(e.target.dataset.id));
-  }
-  if (e.target.classList.contains("minus")) {
-    if (cart.find((elem) => elem.id === Number(e.target.dataset.id) && elem.quantity === 1)) {
-      if (!confirm("Desea eliminar el elemento del carrito?")) return;
-    }
-    cartQuantityMinus(Number(e.target.dataset.id));
-    productStockPlus(Number(e.target.dataset.id));
-    cart = cart.filter((elem) => elem.quantity > 0);
-  }
-  renderCart();
-  updateProducts();
-}
-
-const restoreStock = () => {
-  cart.forEach(cartProduct => {
-    for (let i = 0; i < cartProduct.quantity; i++) {
-      productStockPlus(cartProduct.id);
-    }
-  });
-}
 
 const emptyCart = () => {
   if (confirm("¿Está seguro que desea vaciar el carrito?")) {
-    restoreStock();
-    cart = [];
-    localStorage.removeItem("cart");
-    renderCart();
-    localStorage.removeItem("products");
+    products = products.map((product) => {
+      return {
+        ...product,
+        quantity: 0
+      }
+    });
     updateProducts();
+    renderCart();
+    switchCart();
   }
 }
 
@@ -292,16 +272,24 @@ const cartQuantityRender = () => {
   `;
 }
 
+//funcion total
+const total = () => {
+  totalContainer.innerHTML = `
+    <p>Total:</p> <span class="total">u$d ${cart.reduce((acc, elem) => acc + (elem.price * elem.quantity), 0).toFixed(2)}</span>
+  `;
+}
+
 const init = () => {
   d.addEventListener('DOMContentLoaded', updateProducts);
   d.addEventListener('DOMContentLoaded', renderCart);
   category.addEventListener("change", updateProducts);
-  productsContainer.addEventListener("click", addToCart);
   cartBtn.addEventListener("click", switchCart);
   menuBtn.addEventListener("click", switchMenu);
   navbar.addEventListener("click", switchMenu);
-  clearBtn.addEventListener("click", emptyCart);
-  cartContainer.addEventListener("click", quantityHandler);
   cartBackBtn.addEventListener("click", switchCart);
+  productsContainer.addEventListener("click", productClick);
+  clearBtn.addEventListener("click", emptyCart);
+  cartContainer.addEventListener("click", productClick);
+  //hasta acá anda bien
 }
 init();

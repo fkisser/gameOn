@@ -307,7 +307,7 @@ form .categories .selected {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  align-items: center;
+  align-items: flex-start;
   gap: .5rem;
   padding: .5rem;
   background-color: var(--light-blue);
@@ -323,20 +323,28 @@ form .categories .selected {
   justify-content: space-between;
   gap: .5rem;
   background-color: var(--dark-blue);
-  padding: .3rem;
+  padding: .5rem;
   border-radius: .3rem;
+  position: relative;
+}
+
+.product-group {
+  display: flex;
+  flex-direction: column;
+  width: 10rem;
+  gap: .5rem;
   position: relative;
 }
 
 .product-img {
   background-color: white;
-  width: 33%;
+  width: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
   border-radius: .3rem;
   overflow: hidden;
-  /* height: 10rem; */
+  height: 100%;
 }
 
 .product-img img {
@@ -344,6 +352,42 @@ form .categories .selected {
   height: 9rem;
   object-fit: scale-down;
   object-position: center;
+}
+
+.product .item-handler {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  border-radius: .3rem;
+  gap: 1rem;
+  background: linear-gradient(to bottom, rgba(2, 48, 71, 0), var(--dark-blue) 30%,
+      var(--dark-blue) 70%, rgba(2, 48, 71, 0));
+  font-weight: 900;
+}
+
+.product .product-quantity-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  border-radius: .3rem;
+  font-weight: 900;
+  font-size: x-large;
+  cursor: pointer;
+}
+
+.product .product-quantity-btn:first-child {
+  color: white;
+  background-color: var(--mid-blue);
+}
+
+.product .product-quantity-btn:last-child {
+  color: white;
+  background-color: var(--light-blue);
 }
 
 .product-text {
@@ -359,12 +403,6 @@ form .categories .selected {
 
 .product-desc {
   overflow: scroll;
-}
-
-.product-nums {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
 }
 
 .product-quantity {
