@@ -39,6 +39,79 @@ body {
 
 
 /*********************My styles*************************/
+#dialog {
+  z-index: 99;
+  position: fixed;
+  -webkit-box-shadow: 0 0 1rem 0 rgba(2, 48, 71, 1);
+  -moz-box-shadow: 0 0 1rem 0 rgba(2, 48, 71, 1);
+  box-shadow: 0 0 1rem 0 rgba(2, 48, 71, 1);
+  border: none;
+  text-align: center;
+  left: auto;
+  right: auto;
+  display: flex;
+}
+
+.success {
+  top: calc(100vh - 5rem);
+  bottom: 0;
+  background-color: var(--light-blue);
+  color: var(--dark-blue);
+  height: 5rem;
+  width: min(100vw, 100rem);
+  align-items: center;
+  justify-content: center;
+}
+
+.confirm {
+  border-radius: .3rem;
+  padding: 1rem;
+  top: 30%;
+  flex-direction: column;
+  justify-content: space-around;
+  height: min(50vh, 20rem);
+  width: min(90vw, 30rem);
+  background-color: var(--dark-blue);
+  color: white;
+}
+
+.confirm::backdrop {
+  transition: all 0.3s ease-in-out;
+  background: rgba(114, 179, 232, .5);
+  backdrop-filter: blur(1rem);
+  -webkit-backdrop-filter: blur(1rem);
+}
+
+.confirm .confirm-btns {
+  display: flex;
+  gap: 1rem;
+}
+
+.confirm button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  border-radius: .3rem;
+  font-weight: 900;
+  font-size: x-large;
+  cursor: pointer;
+  border: none;
+  padding: 1rem;
+}
+
+.confirm #yes {
+  color: white;
+  background-color: transparent;
+  border: .2rem solid white;
+}
+
+.confirm #no {
+  color: white;
+  background-color: var(--mid-blue);
+}
+
 section {
   display: flex;
   flex-direction: column;

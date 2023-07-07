@@ -13,6 +13,11 @@ const buyBtn = d.querySelector(".buy-btn");
 const clearBtn = d.querySelector(".clear-btn");
 const cartBubble = d.querySelector(".cart-bubble");
 const cartBackBtn = d.querySelector(".cart-back-btn");
+const dialog = d.querySelector('#dialog');
+
+
+
+
 
 const switchCart = () => {
   if (cartMenu.classList.contains("--slide-in")) {
@@ -130,7 +135,12 @@ const quantityPlus = (id) => {
 const quantityMinus = (id) => {
   products = products.map((product) => {
     return product.id === id
-      ? { ...product, quantity: product.quantity - 1 }
+      ? product.quantity === 0
+        ? product
+        : {
+          ...product,
+          quantity: --product.quantity
+        }
       : product;
   });
 }
@@ -144,25 +154,17 @@ const addToCart = (e) => {
   } else {
     product = products.find((product) => Number(product.id) === Number(e.target.dataset.id));
   }
-  try {
-    quantityPlus(product.id);
-    // showModal("El producto se ha añadido al carrito"); //CREAR LA FUNCION
-  } catch (error) {
-    // showError(error); //CREAR LA FUNCION
-  }
 
+  quantityPlus(product.id);
+  // showModal("El producto se ha añadido al carrito"); //CREAR LA FUNCION
+  renderModal('info', 'El producto ha sido añadido al carrito');
 }
 
 const productClick = (e) => {
   addToCart(e);
   quantityHandler(e);
-
-  //Actualizamos vista del carrito
-  renderCart();
-
-  //actualizamos vista de productos
   updateProducts();
-
+  renderCart();
 }
 
 //funcion quantity handler
@@ -171,19 +173,22 @@ const quantityHandler = (e) => {
   if (!e.target.classList.contains("plus") && !e.target.classList.contains("minus")) return;
   if (e.target.classList.contains("plus")) {
     quantityPlus(Number(e.target.dataset.id));
+    renderModal('info', 'Se ha añadido una unidad del producto');
   }
   if (e.target.classList.contains("minus")) {
-    if (cart.find((elem) => elem.id === Number(e.target.dataset.id) && elem.quantity === 1)) {
-      if (!confirm("Desea eliminar el elemento del carrito?")) return;
+    if (products.find((elem) => elem.id === Number(e.target.dataset.id) && elem.quantity === 1)) {
+      renderModal('delete', '¿Desea eliminar el elemento del carrito?', quantityMinus, Number(e.target.dataset.id));
+    } else {
+      quantityMinus(Number(e.target.dataset.id));
+      renderModal('info', 'Se ha eliminado una unidad del producto');
     }
-    quantityMinus(Number(e.target.dataset.id));
   }
 }
 
-//               //
-// CARRITO         ////////
-//                  //////
-//                   O  O
+//                ///        |
+//                  /C/A/R/T |
+//                   //////  |
+//                    O  O   |
 
 let cart = products.filter((product) => product.quantity) || [];
 
@@ -247,19 +252,20 @@ const renderCart = () => {
   total();
 };
 
-
 const emptyCart = () => {
-  if (confirm("¿Está seguro que desea vaciar el carrito?")) {
-    products = products.map((product) => {
-      return {
-        ...product,
-        quantity: 0
-      }
-    });
-    updateProducts();
-    renderCart();
-    switchCart();
-  }
+  products = products.map((product) => {
+    return {
+      ...product,
+      quantity: 0
+    }
+  });
+  updateProducts();
+  renderCart();
+  switchCart();
+}
+
+const emptyCartBtn = () => {
+  renderModal("confirm", "¿Realmente quieres vaciar el carrito?", emptyCart)
 }
 
 //funcion comprar => renderizar el modal de compra
@@ -279,6 +285,92 @@ const total = () => {
   `;
 }
 
+//MODALS
+const clearDialog = () => {
+  dialog.close();
+  dialog.classList.remove('confirm');
+  dialog.classList.remove('success');
+  dialog.innerHTML = "";
+}
+
+
+const renderClear = (message, callback) => {
+  if (dialog.open) {
+    clearDialog();
+  }
+  dialog.classList.add('confirm');
+  dialog.innerHTML = `
+  <h2>${message}</h2>
+  <div class="confirm-btns">
+    <button id='no'>No</button>
+    <button id='yes'>Si</button>
+  </div>
+  `
+  dialog.showModal();
+  dialog.addEventListener('click', (e) => {
+    if (e.target.id === 'yes') {
+      callback();
+    }
+    if (e.target.id === 'yes' || e.target.id === 'no') {
+      clearDialog();
+    }
+  })
+}
+
+
+const renderDelete = (message, callback, data) => {
+  if (dialog.open) {
+    clearDialog();
+  }
+  dialog.classList.add('confirm');
+  dialog.innerHTML = `
+  <h2>${message}</h2>
+  <div class="confirm-btns">
+    <button id='no'>No</button>
+    <button id='yes'>Si</button>
+  </div>
+  `;
+  dialog.showModal();
+  dialog.addEventListener('click', (e) => {
+    if (e.target.id === 'yes') {
+      callback(data);
+    }
+    if (e.target.id === 'yes' || e.target.id === 'no') {
+      clearDialog();
+    }
+    updateProducts();
+    renderCart();
+  })
+}
+
+const renderInfo = (message) => {
+  if (dialog.open) {
+    clearDialog();
+  }
+  dialog.classList.add('success');
+  dialog.innerHTML = `
+  <p>${message}</p>
+  `;
+  dialog.showModal();
+  setTimeout(() => {
+    clearDialog();
+  }, 1500);
+}
+
+const renderModal = (type, message, callback = undefined, data = undefined) => {
+  //tipo confirm
+  if (type === 'confirm') {
+    renderClear(message, callback);
+  }
+  if (type === 'delete') {
+    renderDelete(message, callback, data);
+  }
+  //tipo info
+  if (type === 'info') {
+    renderInfo(message);
+  }
+}
+
 const init = () => {
   d.addEventListener('DOMContentLoaded', updateProducts);
   d.addEventListener('DOMContentLoaded', renderCart);
@@ -287,9 +379,9 @@ const init = () => {
   menuBtn.addEventListener("click", switchMenu);
   navbar.addEventListener("click", switchMenu);
   cartBackBtn.addEventListener("click", switchCart);
-  productsContainer.addEventListener("click", productClick);
-  clearBtn.addEventListener("click", emptyCart);
-  cartContainer.addEventListener("click", productClick);
+  clearBtn.addEventListener("click", emptyCartBtn);
   //hasta acá anda bien
+  productsContainer.addEventListener("click", productClick);
+  cartContainer.addEventListener("click", productClick);
 }
 init();
