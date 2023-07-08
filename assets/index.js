@@ -14,7 +14,7 @@ const clearBtn = d.querySelector(".clear-btn");
 const cartBubble = d.querySelector(".cart-bubble");
 const cartBackBtn = d.querySelector(".cart-back-btn");
 const dialog = d.querySelector('#dialog');
-
+const form = d.getElementById("form");
 
 
 
@@ -269,7 +269,13 @@ const emptyCartBtn = () => {
 }
 
 //funcion comprar => renderizar el modal de compra
+const buyCartBtn = () => {
+  renderModal("info", "¡Gracias por tu compra! ¡Nos comunicaremos a la brevedad!");
+  setTimeout(() => {
+    emptyCart();
+  }, 1500);
 
+}
 
 //funcion burbuja
 const cartQuantityRender = () => {
@@ -288,8 +294,7 @@ const total = () => {
 //MODALS
 const clearDialog = () => {
   dialog.close();
-  dialog.classList.remove('confirm');
-  dialog.classList.remove('success');
+  dialog.classList.remove('confirm', 'success', 'error', 'info');
   dialog.innerHTML = "";
 }
 
@@ -347,7 +352,7 @@ const renderInfo = (message) => {
   if (dialog.open) {
     clearDialog();
   }
-  dialog.classList.add('success');
+  dialog.classList.add('info', 'success');
   dialog.innerHTML = `
   <p>${message}</p>
   `;
@@ -371,6 +376,57 @@ const renderModal = (type, message, callback = undefined, data = undefined) => {
   }
 }
 
+const validate = (input) => {
+  if (input.previousElementSibling && input.previousElementSibling.classList.contains("form-validation")) input.previousElementSibling.remove();
+  const error = d.createElement("p");
+  error.classList.add("form-validation");
+  if (!input.value.trim()) {
+    error.textContent = `${input.placeholder} no puede estar vacío`;
+    input.before(error);
+    return;
+  }
+  if (input.type === "text") {
+    error.textContent = `${input.placeholder} no puede contener símbolos o números`;
+    const regex = new RegExp("^([A-Za-zÁÄÉËÍÏÓÖÚÜÑÇáäéëíïóöúüñç]+(?: [A-Za-zÁÄÉËÍÏÓÖÚÜÑÇáäéëíïóöúüñç]+)*)$");
+    if (!regex.test(input.value.trim())) {
+      input.before(error);
+    }
+  }
+  if (input.type === "email") {
+    error.textContent = `${input.placeholder} debe tener un formato como: mail@dominio.com`;
+    const regex = new RegExp("^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$");
+    if (!regex.test(input.value.trim())) {
+      input.before(error);
+    }
+  }
+}
+
+const checkValidation = (e) => {
+  validate(e.target);
+}
+
+const hasErrors = () => {
+  return form.querySelector(".fields-container div p");
+}
+
+const validateAll = () => {
+  const inputs = new Array(
+    form.querySelector('#name'), form.querySelector('#lname'), form.querySelector('#email'), form.querySelector('#message')
+  );
+  inputs.forEach(input => { validate(input) });
+}
+
+const formSubmit = (e) => {
+  e.preventDefault();
+  validateAll();
+  if (!hasErrors()) {
+    renderModal("info", "Gracias por comunicarte! Nos contactaremos a la brevedad");
+    form.reset();
+  }
+}
+
+
+
 const init = () => {
   d.addEventListener('DOMContentLoaded', updateProducts);
   d.addEventListener('DOMContentLoaded', renderCart);
@@ -380,8 +436,12 @@ const init = () => {
   navbar.addEventListener("click", switchMenu);
   cartBackBtn.addEventListener("click", switchCart);
   clearBtn.addEventListener("click", emptyCartBtn);
-  //hasta acá anda bien
+  buyBtn.addEventListener("click", buyCartBtn);
   productsContainer.addEventListener("click", productClick);
   cartContainer.addEventListener("click", productClick);
+  form.addEventListener("submit", formSubmit);
+  form.addEventListener("input", checkValidation);
+  form.addEventListener("focusout", checkValidation);
+  //hasta acá anda bien
 }
 init();
