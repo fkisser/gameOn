@@ -543,7 +543,20 @@ form .categories .selected {
   flex-direction: column;
   width: 100%;
   height: 100%;
-  gap: .5rem;
+}
+
+form .info-container {
+  display: flex;
+  width: 100%;
+  height: 100%;
+}
+
+form .fields-container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  justify-content: space-around;
 }
 
 .form input,
