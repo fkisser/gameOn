@@ -261,20 +261,25 @@ const emptyCart = () => {
   });
   updateProducts();
   renderCart();
-  switchCart();
 }
 
 const emptyCartBtn = () => {
   renderModal("confirm", "¿Realmente quieres vaciar el carrito?", emptyCart)
 }
 
+const buy = () => {
+  emptyCart();
+  cartContainer.innerHTML = `
+  <h2>¡Gracias por tu compra!</h2>
+  <p class="empty-msg">
+    Nos comunicaremos a la brevedad. Puedes seguir comprando si gustas.
+  </p>
+  `;
+}
+
 //funcion comprar => renderizar el modal de compra
 const buyCartBtn = () => {
-  renderModal("info", "¡Gracias por tu compra! ¡Nos comunicaremos a la brevedad!");
-  setTimeout(() => {
-    emptyCart();
-  }, 1500);
-
+  renderModal("confirm", "¿Deseas continuar con tu compra?", buy);
 }
 
 //funcion burbuja
