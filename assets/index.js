@@ -12,38 +12,57 @@ const totalContainer = d.querySelector(".cart-total");
 const buyBtn = d.querySelector(".buy-btn");
 const clearBtn = d.querySelector(".clear-btn");
 const cartBubble = d.querySelector(".cart-bubble");
-const cartBackBtn = d.querySelector(".cart-back-btn");
+const cartBackBtn = d.querySelector(".back-btn");
 const dialog = d.querySelector('#dialog');
 const form = d.getElementById("form");
+const login = d.getElementById("login");
+const register = d.getElementById("register");
 
 
+const openCart = () => {
 
+  menuBtn.innerHTML = `<i class="fa-solid fa-bars"></i>`;
+  navbar.classList.remove("--slide-in");
+
+  overlay.classList.add("--slide-in");
+  overlay.classList.remove("--d-none");
+  cartMenu.classList.add("--slide-in");
+}
+
+const closeCart = () => {
+  overlay.classList.add("--d-none");
+  overlay.classList.remove("--slide-in");
+  cartMenu.classList.remove("--slide-in");
+}
 
 const switchCart = () => {
   if (cartMenu.classList.contains("--slide-in")) {
-    overlay.classList.add("--d-none");
-    overlay.classList.remove("--slide-in");
-    cartMenu.classList.remove("--slide-in");
+    closeCart();
   } else {
-    overlay.classList.add("--slide-in");
-    overlay.classList.remove("--d-none");
-    cartMenu.classList.add("--slide-in");
-    navbar.classList.remove("--slide-in");
+    openCart();
   }
+}
+
+const openMenu = () => {
+  navbar.classList.add("--slide-in");
+  overlay.classList.add("--slide-in");
+  cartMenu.classList.remove("--slide-in");
+  menuBtn.innerHTML = `<i class="fa-solid fa-xmark"></i>`;
+  overlay.classList.remove("--d-none");
+}
+
+const closeMenu = () => {
+  navbar.classList.remove("--slide-in");
+  overlay.classList.remove("--slide-in");
+  overlay.classList.add("--d-none");
+  menuBtn.innerHTML = `<i class="fa-solid fa-bars"></i>`;
 }
 
 const switchMenu = () => {
   if (navbar.classList.contains("--slide-in")) {
-    navbar.classList.remove("--slide-in");
-    overlay.classList.remove("--slide-in");
-    overlay.classList.add("--d-none");
-    menuBtn.innerHTML = `<i class="fa-solid fa-bars"></i>`;
+    closeMenu();
   } else {
-    navbar.classList.add("--slide-in");
-    overlay.classList.add("--slide-in");
-    overlay.classList.remove("--d-none");
-    cartMenu.classList.remove("--slide-in");
-    menuBtn.innerHTML = `<i class="fa-solid fa-xmark"></i>`;
+    openMenu();
   }
 }
 
@@ -154,17 +173,16 @@ const addToCart = (e) => {
   } else {
     product = products.find((product) => Number(product.id) === Number(e.target.dataset.id));
   }
-
   quantityPlus(product.id);
   // showModal("El producto se ha añadido al carrito"); //CREAR LA FUNCION
   renderModal('info', 'El producto ha sido añadido al carrito');
+  updateProducts();
+  renderCart();
 }
 
 const productClick = (e) => {
   addToCart(e);
   quantityHandler(e);
-  updateProducts();
-  renderCart();
 }
 
 //funcion quantity handler
@@ -183,6 +201,8 @@ const quantityHandler = (e) => {
       renderModal('info', 'Se ha eliminado una unidad del producto');
     }
   }
+  updateProducts();
+  renderCart();
 }
 
 //                ///        |
@@ -404,6 +424,13 @@ const validate = (input) => {
       input.before(error);
     }
   }
+  if (input.type === "password") {
+    error.textContent = `${input.placeholder} debe tener al menos 8 caracteres, solo letras y números`;
+    const regex = new RegExp("^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$");
+    if (!regex.test(input.value)) {
+      input.before(error);
+    }
+  }
 }
 
 const checkValidation = (e) => {
@@ -430,8 +457,6 @@ const formSubmit = (e) => {
   }
 }
 
-
-
 const init = () => {
   d.addEventListener('DOMContentLoaded', updateProducts);
   d.addEventListener('DOMContentLoaded', renderCart);
@@ -439,6 +464,7 @@ const init = () => {
   cartBtn.addEventListener("click", switchCart);
   menuBtn.addEventListener("click", switchMenu);
   navbar.addEventListener("click", switchMenu);
+  navbar.addEventListener("click", closeCart);
   cartBackBtn.addEventListener("click", switchCart);
   clearBtn.addEventListener("click", emptyCartBtn);
   buyBtn.addEventListener("click", buyCartBtn);
@@ -447,6 +473,8 @@ const init = () => {
   form.addEventListener("submit", formSubmit);
   form.addEventListener("input", checkValidation);
   form.addEventListener("focusout", checkValidation);
+  overlay.addEventListener("click", closeMenu);
+  overlay.addEventListener("click", closeCart);
   //hasta acá anda bien
 }
 init();
