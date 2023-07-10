@@ -602,7 +602,7 @@ form .categories .selected {
 .products-container {
   display: flex;
   flex-wrap: wrap;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: flex-start;
   gap: .5rem;
   padding: .5rem;

@@ -76,7 +76,7 @@ dialog #yes:hover {
   transform: scale(1.2) translateY(-.25rem);
 }
 
-/*CARRITO*/
+/*CART*/
 .cart .cart-item:hover {
   transform: scale(1.05) translateY(-.25rem);
 }
@@ -123,7 +123,7 @@ dialog #yes:hover {
   animation-delay: 1s;
 }
 
-/*PRODUCTOS*/
+/*PRODUCTS*/
 .product .add-btn:hover {
   transform: scale(1.05);
   -webkit-box-shadow: 0px 0px 15px 0px rgba(0, 0, 0, 0.75);
@@ -135,8 +135,7 @@ dialog #yes:hover {
   transform: translateY(-.25rem);
 }
 
-/*NOSOTROS*/
-/*CONTACTO*/
+/*CONTACT*/
 form input:hover,
 form textarea:hover {
   border-bottom: .3rem solid var(--selective-yellow);

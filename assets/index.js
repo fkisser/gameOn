@@ -1,47 +1,11 @@
-const d = document,
-  productsContainer = d.querySelector(".products-container"),
-  category = d.querySelector("#categories"),
-  cartBtn = d.querySelector(".cart-btn"),
-  menuBtn = d.querySelector(".menu-btn");
-const cartMenu = d.querySelector(".cart");
-const navbar = d.querySelector(".navbar");
+const d = document;
 const overlay = d.querySelector(".overlay");
-const cartContainer = d.querySelector(".cart-container");
-const addToCartBtn = d.querySelector(".add-btn");
-const totalContainer = d.querySelector(".cart-total");
-const buyBtn = d.querySelector(".buy-btn");
-const clearBtn = d.querySelector(".clear-btn");
-const cartBubble = d.querySelector(".cart-bubble");
-const cartBackBtn = d.querySelector(".back-btn");
-const dialog = d.querySelector('#dialog');
-const form = d.getElementById("form");
-const login = d.getElementById("login");
-const register = d.getElementById("register");
 
-
-const openCart = () => {
-
-  menuBtn.innerHTML = `<i class="fa-solid fa-bars"></i>`;
-  navbar.classList.remove("--slide-in");
-
-  overlay.classList.add("--slide-in");
-  overlay.classList.remove("--d-none");
-  cartMenu.classList.add("--slide-in");
-}
-
-const closeCart = () => {
-  overlay.classList.add("--d-none");
-  overlay.classList.remove("--slide-in");
-  cartMenu.classList.remove("--slide-in");
-}
-
-const switchCart = () => {
-  if (cartMenu.classList.contains("--slide-in")) {
-    closeCart();
-  } else {
-    openCart();
-  }
-}
+/************************/
+/*********MENU***********/
+/************************/
+const menuBtn = d.querySelector(".menu-btn");
+const navbar = d.querySelector(".navbar");
 
 const openMenu = () => {
   navbar.classList.add("--slide-in");
@@ -65,6 +29,13 @@ const switchMenu = () => {
     openMenu();
   }
 }
+
+/************************/
+/********PRODUCTS********/
+/************************/
+const category = d.querySelector("#categories");
+const productsContainer = d.querySelector(".products-container");
+const addToCartBtn = d.querySelector(".add-btn");
 
 const createProductTemplate = (product) => {
   const { id, title, description, price, quantity, url } = product;
@@ -184,9 +155,7 @@ const productClick = (e) => {
   quantityHandler(e);
 }
 
-//funcion quantity handler
 const quantityHandler = (e) => {
-  //segun el target del evento
   if (!e.target.classList.contains("plus") && !e.target.classList.contains("minus")) return;
   if (e.target.classList.contains("plus")) {
     quantityPlus(Number(e.target.dataset.id));
@@ -208,8 +177,38 @@ const quantityHandler = (e) => {
 //                  /C/A/R/T |
 //                   //////  |
 //                    O  O   |
-
 let cart = products.filter((product) => product.quantity) || [];
+const cartBtn = d.querySelector(".cart-btn");
+const cartMenu = d.querySelector(".cart");
+const cartContainer = d.querySelector(".cart-container");
+const totalContainer = d.querySelector(".cart-total");
+const buyBtn = d.querySelector(".buy-btn");
+const clearBtn = d.querySelector(".clear-btn");
+const cartBubble = d.querySelector(".cart-bubble");
+const cartBackBtn = d.querySelector(".back-btn");
+
+const openCart = () => {
+  menuBtn.innerHTML = `<i class="fa-solid fa-bars"></i>`;
+  navbar.classList.remove("--slide-in");
+  overlay.classList.add("--slide-in");
+  overlay.classList.remove("--d-none");
+  cartMenu.classList.add("--slide-in");
+}
+
+const closeCart = () => {
+  overlay.classList.add("--d-none");
+  overlay.classList.remove("--slide-in");
+  cartMenu.classList.remove("--slide-in");
+}
+
+const switchCart = () => {
+  if (cartMenu.classList.contains("--slide-in")) {
+    closeCart();
+  } else {
+    openCart();
+  }
+}
+
 
 const createCartProduct = (product) => {
   cart = [
@@ -297,13 +296,11 @@ const buy = () => {
   `;
 }
 
-//funcion comprar => renderizar el modal de compra
 const buyCartBtn = (e) => {
   if (buyBtn.classList.contains("--disabled")) return;
   renderModal("confirm", "¿Deseas continuar con tu compra?", buy);
 }
 
-//funcion burbuja
 const cartQuantityRender = () => {
   cartBubble.innerHTML = `
     ${cart.reduce((acc, elem) => acc + (elem.quantity), 0)}
@@ -317,7 +314,11 @@ const total = () => {
   `;
 }
 
-//MODALS
+/************************/
+/*********MODALS*********/
+/************************/
+const dialog = d.querySelector('#dialog');
+
 const clearDialog = () => {
   dialog.close();
   dialog.classList.remove('confirm', 'success', 'error', 'info');
@@ -389,18 +390,21 @@ const renderInfo = (message) => {
 }
 
 const renderModal = (type, message, callback = undefined, data = undefined) => {
-  //tipo confirm
   if (type === 'confirm') {
     renderClear(message, callback);
   }
   if (type === 'delete') {
     renderDelete(message, callback, data);
   }
-  //tipo info
   if (type === 'info') {
     renderInfo(message);
   }
 }
+
+/************************/
+/*******FORMULARIOS******/
+/************************/
+const form = d.getElementById("form");
 
 const validate = (input) => {
   if (input.previousElementSibling && input.previousElementSibling.classList.contains("form-validation")) input.previousElementSibling.remove();
@@ -422,13 +426,6 @@ const validate = (input) => {
     error.textContent = `${input.placeholder} debe tener un formato como: mail@dominio.com`;
     const regex = new RegExp("^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$");
     if (!regex.test(input.value.trim())) {
-      input.before(error);
-    }
-  }
-  if (input.type === "password") {
-    error.textContent = `${input.placeholder} debe tener al menos 8 caracteres, solo letras y números`;
-    const regex = new RegExp("^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$");
-    if (!regex.test(input.value)) {
       input.before(error);
     }
   }
@@ -476,6 +473,5 @@ const init = () => {
   form.addEventListener("focusout", checkValidation);
   overlay.addEventListener("click", closeMenu);
   overlay.addEventListener("click", closeCart);
-  //hasta acá anda bien
 }
 init();
