@@ -124,13 +124,11 @@ const quantityPlus = (id) => {
 }
 const quantityMinus = (id) => {
   products = products.map((product) => {
-    return product.id === id
-      ? product.quantity === 0
-        ? product
-        : {
-          ...product,
-          quantity: --product.quantity
-        }
+    return product.id === id && product.quantity > 0
+      ? {
+        ...product,
+        quantity: --product.quantity
+      }
       : product;
   });
 }
