@@ -478,9 +478,13 @@ section:nth-child(odd) {
   color: var(--light-blue);
 }
 
+.cart-container h2,
+.empty-msg {
+  text-align: center;
+}
+
 .empty-msg {
   font-size: large;
-  text-align: center;
   font-weight: 500;
 }
 
