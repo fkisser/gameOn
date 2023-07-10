@@ -174,7 +174,6 @@ const addToCart = (e) => {
     product = products.find((product) => Number(product.id) === Number(e.target.dataset.id));
   }
   quantityPlus(product.id);
-  // showModal("El producto se ha añadido al carrito"); //CREAR LA FUNCION
   renderModal('info', 'El producto ha sido añadido al carrito');
   updateProducts();
   renderCart();
@@ -284,6 +283,7 @@ const emptyCart = () => {
 }
 
 const emptyCartBtn = () => {
+  if (clearBtn.classList.contains("--disabled")) return;
   renderModal("confirm", "¿Realmente quieres vaciar el carrito?", emptyCart)
 }
 
@@ -298,7 +298,8 @@ const buy = () => {
 }
 
 //funcion comprar => renderizar el modal de compra
-const buyCartBtn = () => {
+const buyCartBtn = (e) => {
+  if (buyBtn.classList.contains("--disabled")) return;
   renderModal("confirm", "¿Deseas continuar con tu compra?", buy);
 }
 

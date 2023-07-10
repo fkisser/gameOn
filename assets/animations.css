@@ -97,6 +97,14 @@ dialog #yes:hover {
   background-color: var(--mid-blue);
 }
 
+.cart .--disabled:hover {
+  cursor: not-allowed;
+  border: 0;
+  background-color: var(--mid-blue);
+  color: var(--dark-blue);
+  transform: scale(1) translateY(0);
+}
+
 /*HERO*/
 
 .hero-image .logo {
