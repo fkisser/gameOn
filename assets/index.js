@@ -101,6 +101,10 @@ const selectCategory = (value) => {
   });
 }
 
+const saveProducts = () => {
+  localStorage.setItem("products", JSON.stringify(products));
+};
+
 const updateProducts = () => {
   const filtered = filterProducts(category.value);
   selectCategory(category.value);
@@ -108,29 +112,29 @@ const updateProducts = () => {
   saveProducts();
 };
 
-const saveProducts = () => {
-  localStorage.setItem("products", JSON.stringify(products));
-};
-
 const quantityPlus = (id) => {
-  products = products.map((product) => {
-    return product.id === id
+  products = products.map((product) =>
+    product.id === id
       ? {
         ...product,
         quantity: product.quantity + 1
       }
-      : product;
-  });
+      : product
+  );
+  updateProducts();
+  renderCart();
 }
 const quantityMinus = (id) => {
-  products = products.map((product) => {
-    return product.id === id && product.quantity > 0
+  products = products.map((product) =>
+    product.id === id && product.quantity > 0
       ? {
         ...product,
-        quantity: --product.quantity
+        quantity: product.quantity - 1
       }
-      : product;
-  });
+      : product
+  );
+  updateProducts();
+  renderCart();
 }
 
 
@@ -144,13 +148,6 @@ const addToCart = (e) => {
   }
   quantityPlus(product.id);
   renderModal('info', 'El producto ha sido añadido al carrito');
-  updateProducts();
-  renderCart();
-}
-
-const productClick = (e) => {
-  addToCart(e);
-  quantityHandler(e);
 }
 
 const quantityHandler = (e) => {
@@ -167,8 +164,11 @@ const quantityHandler = (e) => {
       renderModal('info', 'Se ha eliminado una unidad del producto');
     }
   }
-  updateProducts();
-  renderCart();
+}
+
+const productClick = (e) => {
+  addToCart(e);
+  quantityHandler(e);
 }
 
 //                ///        |
